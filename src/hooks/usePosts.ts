@@ -13,11 +13,16 @@ export const usePosts = () => {
   const [error, setError] = useState<string | null>(null);
 
   const uploadPending = useCallback(async () => {
+    const netInfo = await NetInfo.fetch();
     try {
-      await uploadPendingPosts(() => setIsUploading(true));
+      if (netInfo.isConnected) {
+        await uploadPendingPosts(() => setIsUploading(true));
+      }
     } finally {
-      fetchPosts(true);
-      setIsUploading(false);
+      if (netInfo.isConnected) {
+        fetchPosts(true);
+        setIsUploading(false);
+      }
     }
   }, []);
 
