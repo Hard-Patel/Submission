@@ -8,16 +8,16 @@ import {
   RefreshControl,
 } from "react-native";
 import React, { useCallback } from "react";
-import { useFocusEffect, useNavigation } from "@react-navigation/native";
+import { useFocusEffect } from "@react-navigation/native";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import { navigationRef } from "../../../App";
 import { usePosts } from "../../hooks/usePosts";
 import { Post } from "../../database/DatabaseHelper";
 
-const PostItem = ({ post, index }: { post: Post, index: number }) => (
+const PostItem = ({ post, index }: { post: Post; index: number }) => (
   <View style={styles.postContainer}>
     <View style={styles.postHeader}>
-      <Text style={styles.postTitle}>{index} {post.title}</Text>
+      <Text style={styles.postTitle}>{post.title}</Text>
       <Ionicons
         name={post.isUploaded ? "cloud-done" : "cloud-offline"}
         size={20}
@@ -56,7 +56,7 @@ const PostItem = ({ post, index }: { post: Post, index: number }) => (
   </View>
 );
 
-export function HomeScreen() {  
+export function HomeScreen() {
   const {
     posts,
     isUploading,
@@ -64,7 +64,7 @@ export function HomeScreen() {
     error,
     refreshPosts,
     refetchLocalPosts,
-    uploadPending
+    uploadPending,
   } = usePosts();
 
   useFocusEffect(
@@ -119,6 +119,7 @@ export function HomeScreen() {
       ) : null}
       <FlatList
         data={posts}
+        removeClippedSubviews={false}
         renderItem={({ item, index }) => <PostItem post={item} index={index} />}
         keyExtractor={(item) => item.id?.toString() || ""}
         contentContainerStyle={styles.listContent}

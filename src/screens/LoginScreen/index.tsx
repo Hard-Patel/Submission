@@ -12,6 +12,7 @@ import { useSelector } from "react-redux";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import { useLogin } from "../../hooks/useLogin";
 import { RootState } from "../../store"; // You'll need to create this
+import { navigationRef } from "../../../App";
 
 export function LoginScreen() {
   const { navigate } = useNavigation();
@@ -24,7 +25,7 @@ export function LoginScreen() {
   const { isLoading: isLoggingIn, user } = useSelector(
     (state: RootState) => state.auth
   );
-  console.log('user: ', user);
+  console.log("user: ", user);
 
   const handleLogin = async () => {
     if (!email || !password) {
@@ -35,7 +36,7 @@ export function LoginScreen() {
     try {
       const onSuccess = () => {
         console.log("Login successful");
-        navigate("Home"); // Add your navigation logic here
+        navigationRef.reset({ routes: [{ name: "Home" }], index: 0 });
       };
       await tryLogin(
         { username: email, password, expiresInMins: 30 },
