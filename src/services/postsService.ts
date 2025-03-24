@@ -1,6 +1,4 @@
-import NetInfo from "@react-native-community/netinfo";
 import {
-  savePost,
   getUnuploadedPosts,
   markPostAsUploaded,
   saveApiPosts,
@@ -9,15 +7,11 @@ import {
 
 export const fetchAndMergeApiPosts = async (localPosts: Post[]) => {
   try {
-    // Fetch posts from API
-    const response = await fetch('https://dummyjson.com/posts');
+    const response = await fetch("https://dummyjson.com/posts");
     const data = await response.json();
     const apiPosts = data.posts;
 
-    console.log('API Posts fetched:', apiPosts.length);
-
-    // Format API posts
-    const formattedApiPosts = apiPosts.map(post => ({
+    const formattedApiPosts = apiPosts.map((post) => ({
       apiId: post.id,
       title: post.title,
       body: post.body,
@@ -26,18 +20,14 @@ export const fetchAndMergeApiPosts = async (localPosts: Post[]) => {
       createdAt: post.createdAt || new Date().toISOString(),
       tags: post.tags || [],
       reactions: post.reactions || { likes: 0, dislikes: 0 },
-      views: post.views || 0
+      views: post.views || 0,
     }));
 
-    // Save API posts to database
-    console.log('localPosts: ', localPosts);
-    
     const posts = mergePosts(localPosts, formattedApiPosts);
     await saveApiPosts(posts);
-    
+
     return formattedApiPosts;
   } catch (error) {
-    console.error('Error in fetchAndMergeApiPosts:', error);
     throw error;
   }
 };
@@ -45,14 +35,13 @@ export const fetchAndMergeApiPosts = async (localPosts: Post[]) => {
 const mergePosts = (localPosts: Post[], apiPosts: any[]): Post[] => {
   const mergedPosts: Post[] = [...localPosts];
 
-  // console.log('apiPosts: ', apiPosts);
   apiPosts.forEach((apiPost) => {
     const existingPostIndex = mergedPosts.findIndex(
-      (post) => post.id === apiPost.apiId || post.id === apiPost.id
+      (post) => post.id === apiPost.apiId
     );
 
     const formattedApiPost: Post = {
-      id: apiPost.id,
+      id: apiPost.apiId,
       title: apiPost.title,
       body: apiPost.body,
       userId: apiPost.userId,
@@ -64,38 +53,16 @@ const mergePosts = (localPosts: Post[], apiPosts: any[]): Post[] => {
     };
 
     if (existingPostIndex !== -1) {
-      // Update existing post
       mergedPosts[existingPostIndex] = {
         ...mergedPosts[existingPostIndex],
         ...formattedApiPost,
       };
     } else {
-      // Add new post
       mergedPosts.push(formattedApiPost);
     }
   });
 
-  console.log('mergedPosts: ', mergedPosts);
-  // Sort by creation date (newest first)
-  return mergedPosts.sort(
-    (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-  );
-};
-
-export const concatLocalWithRemote = async (remotePosts: Post[]) => {
-  console.log('remotePosts: ', remotePosts);
-  let unuploadedPosts = await getUnuploadedPosts();
-  unuploadedPosts = unuploadedPosts.map((item) => ({
-    ...item,
-    tags: JSON.parse(item.tags),
-    reactions: JSON.parse(item.reactions),
-  }));
-  const mergedPosts: Post[] = [...unuploadedPosts, ...remotePosts];
-  console.log('mergedPosts: ', mergedPosts);
-
-  return mergedPosts.sort(
-    (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-  );
+  return mergedPosts;
 };
 
 export const uploadPendingPosts = async (uploadStart?: () => void) => {
@@ -103,9 +70,7 @@ export const uploadPendingPosts = async (uploadStart?: () => void) => {
     const unuploadedPosts = await getUnuploadedPosts();
 
     if (unuploadedPosts.length > 0) {
-      console.log("unuploadedPosts", unuploadedPosts);
       uploadStart?.();
-      // Adding intentional delay to simulate network request
       await new Promise((resolve) => setTimeout(resolve, 2000));
     }
 
@@ -122,8 +87,6 @@ export const uploadPendingPosts = async (uploadStart?: () => void) => {
         });
 
         if (response.ok) {
-          console.log("post uploaded", post);
-
           await markPostAsUploaded(post.id!);
         }
       } catch (error) {

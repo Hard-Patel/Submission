@@ -1,6 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
 import {
-  concatLocalWithRemote,
   fetchAndMergeApiPosts,
   uploadPendingPosts,
 } from "../services/postsService";
@@ -28,18 +27,15 @@ export const usePosts = () => {
       setIsLoading(true);
       setError(null);
 
-      // Check internet connection
       const netInfo = await NetInfo.fetch();
 
-      // If online and shouldFetchApi is true, fetch from API first
       if (netInfo.isConnected && shouldFetchApi) {
         const localPosts = await getAllPosts();
-        const posts = await fetchAndMergeApiPosts(localPosts);
+        await fetchAndMergeApiPosts(localPosts);
         const fetchedPosts = await getAllPosts();
-        console.log('fetchedPosts: ', fetchedPosts);
+        console.log("fetchedPosts: ", fetchedPosts);
         setPosts(fetchedPosts);
       } else {
-        // Get all posts from local database
         const localPosts = await getAllPosts();
         console.log(localPosts);
 
@@ -59,9 +55,7 @@ export const usePosts = () => {
 
   const handleLocalPostSync = async () => {
     const fetchedPosts = await getAllPosts();
-    // console.log('fetchedPosts posts: ', fetchedPosts);
-    const mergedPosts = await concatLocalWithRemote(fetchedPosts);
-    setPosts(mergedPosts);
+    setPosts(fetchedPosts);
   };
 
   return {

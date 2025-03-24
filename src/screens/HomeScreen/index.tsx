@@ -14,11 +14,10 @@ import { navigationRef } from "../../../App";
 import { usePosts } from "../../hooks/usePosts";
 import { Post } from "../../database/DatabaseHelper";
 
-// Create PostItem component within the same file for now
-const PostItem = ({ post }: { post: Post }) => (
+const PostItem = ({ post, index }: { post: Post, index: number }) => (
   <View style={styles.postContainer}>
     <View style={styles.postHeader}>
-      <Text style={styles.postTitle}>{post.title}</Text>
+      <Text style={styles.postTitle}>{index} {post.title}</Text>
       <Ionicons
         name={post.isUploaded ? "cloud-done" : "cloud-offline"}
         size={20}
@@ -57,9 +56,7 @@ const PostItem = ({ post }: { post: Post }) => (
   </View>
 );
 
-export function HomeScreen() {
-  const { navigate } = useNavigation();
-  
+export function HomeScreen() {  
   const {
     posts,
     isUploading,
@@ -122,7 +119,7 @@ export function HomeScreen() {
       ) : null}
       <FlatList
         data={posts}
-        renderItem={({ item }) => <PostItem post={item} />}
+        renderItem={({ item, index }) => <PostItem post={item} index={index} />}
         keyExtractor={(item) => item.id?.toString() || ""}
         contentContainerStyle={styles.listContent}
         ListEmptyComponent={renderEmptyState}
@@ -138,7 +135,7 @@ export function HomeScreen() {
 
       <TouchableOpacity
         style={styles.fab}
-        onPress={() => navigationRef?.current?.navigate("NewPost")}
+        onPress={() => navigationRef?.navigate("NewPost")}
       >
         <Ionicons name="add" size={24} color="white" />
       </TouchableOpacity>

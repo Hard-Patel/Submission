@@ -5,6 +5,7 @@ SQLite.enablePromise(true);
 
 export interface Post {
   id?: number;
+  apiId?: number;
   title: string;
   body: string;
   userId: number;
@@ -84,19 +85,12 @@ export const savePost = async (
 
 export const saveApiPosts = async (apiPosts: Post[]) => {
   try {
-    console.log("🛠️ Starting saveApiPosts...");
-
-    // Log input data
-    console.log("🧐 Received apiPosts:", apiPosts);
-
     const db = await getDBConnection();
 
     await new Promise<void>((resolve, reject) => {
       db.transaction((tx) => {
-        console.log("🗑️ Deleting old uploaded posts...");
         tx.executeSql("DELETE FROM posts WHERE isUploaded = 1", [], () => {
           if (apiPosts.length === 0) {
-            console.log("🚨 No posts to insert!");
             resolve();
             return;
           }
@@ -110,7 +104,6 @@ export const saveApiPosts = async (apiPosts: Post[]) => {
 
           const insertPromises = apiPosts.map((post) => {
             return new Promise<void>((res, rej) => {
-              // console.log("📌 Inserting post:", post);
               tx.executeSql(
                 query,
                 [
@@ -136,7 +129,6 @@ export const saveApiPosts = async (apiPosts: Post[]) => {
           // Wait for all insert operations to complete
           Promise.all(insertPromises)
             .then(() => {
-              console.log("✅ All posts inserted successfully.");
               resolve();
             })
             .catch(reject);
@@ -160,7 +152,6 @@ export const getUnuploadedPosts = async (): Promise<Post[]> => {
     }
     return posts;
   } catch (error) {
-    console.error("Error getting unuploaded posts:", error);
     throw error;
   }
 };
@@ -171,7 +162,6 @@ export const markPostAsUploaded = async (id: number) => {
       id,
     ]);
   } catch (error) {
-    console.error("Error marking post as uploaded:", error);
     throw error;
   }
 };
@@ -194,7 +184,7 @@ export const getAllPosts = async (): Promise<Post[]> => {
     for (let i = 0; i < results.rows.length; i++) {
       const item = results.rows.item(i);
       posts.push({
-        id: item.id,
+        id: item.apiId,
         title: item.title,
         body: item.body,
         userId: item.userId,
@@ -206,7 +196,6 @@ export const getAllPosts = async (): Promise<Post[]> => {
       });
     }
 
-    console.log(`Retrieved ${posts.length} posts from database`);
     return posts;
   } catch (error) {
     console.error("Error fetching posts:", error);

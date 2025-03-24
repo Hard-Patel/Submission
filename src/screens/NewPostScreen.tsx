@@ -24,7 +24,9 @@ const TagInput: React.FC<TagInputProps> = ({ value, onAddTag, disabled }) => {
   const handleAddTag = () => {
     if (tagInput.trim()) {
       onAddTag(tagInput.trim().toLowerCase());
-      setTagInput('');
+      setTimeout(() => {
+        setTagInput("");
+      }, 100);
     }
   };
 
@@ -36,6 +38,7 @@ const TagInput: React.FC<TagInputProps> = ({ value, onAddTag, disabled }) => {
         value={tagInput}
         onChangeText={setTagInput}
         editable={!disabled}
+        placeholderTextColor="#666"
         onKeyPress={({ nativeEvent }) => {
           if (nativeEvent.key === ' ') {
             handleAddTag();
