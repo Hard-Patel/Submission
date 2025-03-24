@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "93064471086",
+    "project_id": "energizer-dc1ca",
+    "storage_bucket": "energizer-dc1ca.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:93064471086:android:36d308d3e2b2271e7bf5bf",
+        "android_client_info": {
+          "package_name": "com.energizer"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAxhNZUpvFPUQ1OgiTPmfGFOmSGUvFAS6g"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
